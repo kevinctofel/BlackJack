@@ -27,10 +27,7 @@ function shuffleDeck(arr) {
 	return;
 }
 
-createDeck();
-// console.log(deck); 
-// Test output of deck
-shuffleDeck(deck);
+
 // console.log(deck);
 // Test output of shuffled deck
 
@@ -46,16 +43,13 @@ function drawFour() {
 
 function startGame() {
 	let input = "Y";
-	input = prompt("Welcome to BlackJack. Do you want to play? (Y)es or (N)o?".toUpperCase());
+	input = prompt("Welcome to BlackJack. Do you want to play? (Y)es or (N)o?").toUpperCase();
 	if (input == "Y") {
+		createDeck();
+		shuffleDeck(deck);
 		drawFour();
-		// console.log(`Dealer has: `);
-		// console.log(dealerCards);
-		// console.log("Player has: ");
-		// console.log(playerCards);
-
 	}
-	return;
+	showStatus();
 }
 
 function getCardValue(card) {
@@ -98,17 +92,15 @@ function getHandValue(hand) {
 }
 
 function showStatus() {
-	let playerHand = "Player: ", dealerHand = "Dealer: ";
 
-	dealerHand += `${dealerCards[0].value} of ${dealerCards[0].suit}`;
+	let playerHand = `Player: ${playerCards[0].value} of ${playerCards[0].suit}`;
+	let dealerHand = `Dealer: ${dealerCards[0].value} of ${dealerCards[0].suit}`;
 
 	for (let i = 1; i < dealerCards.length; i++) {
 		dealerHand += (` and ${dealerCards[i].value} of ${dealerCards[i].suit}`);
 	}
 	let dealerTotal = (getHandValue(dealerCards));
 	console.log(`${dealerHand}: (${dealerTotal})`);
-
-	playerHand += `${playerCards[0].value} of ${playerCards[0].suit}`;
 
 	for (let i = 1; i < playerCards.length; i++) {
 		playerHand += (` and ${playerCards[i].value} of ${playerCards[i].suit}`);
@@ -118,5 +110,3 @@ function showStatus() {
 }
 
 startGame();
-
-showStatus();
