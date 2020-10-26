@@ -41,17 +41,6 @@ function drawFour() {
 	return;
 }
 
-function startGame() {
-	let input = "Y";
-	input = prompt("Welcome to BlackJack. Do you want to play? (Y)es or (N)o?").toUpperCase();
-	if (input == "Y") {
-		createDeck();
-		shuffleDeck(deck);
-		drawFour();
-	}
-	showStatus();
-}
-
 function getCardValue(card) {
 	switch (card) {
 		case "Two":
@@ -100,13 +89,43 @@ function showStatus() {
 		dealerHand += (` and ${dealerCards[i].value} of ${dealerCards[i].suit}`);
 	}
 	let dealerTotal = (getHandValue(dealerCards));
-	console.log(`${dealerHand}: (${dealerTotal})`);
+	console.log(`${dealerHand} (${dealerTotal})`);
 
 	for (let i = 1; i < playerCards.length; i++) {
 		playerHand += (` and ${playerCards[i].value} of ${playerCards[i].suit}`);
 	}
 	let playerTotal = (getHandValue(playerCards));
-	console.log(`${playerHand}: (${playerTotal})`);
+	console.log(`${playerHand} (${playerTotal})`);
+}
+
+function drawCard() { // draw single card for play Hit action
+	playerCards.push(deck.pop());
+}
+
+function playerHitOrStand() { // recursive Hit or Stand action
+	let input = "Y";
+	input = prompt("\nDo you want to (H)it or (S)tand?").toUpperCase();
+	if (input == "H") {
+		drawCard();
+		showStatus();
+		playerHitOrStand();
+	}
+	else if (input == "S") {
+		console.log("\nYou hit stand!\n");
+		showStatus();
+	}
+}
+
+function startGame() {
+	let input = "Y";
+	input = prompt("Welcome to BlackJack. Do you want to play? (Y)es or (N)o?").toUpperCase();
+	if (input == "Y") {
+		createDeck();
+		shuffleDeck(deck);
+		drawFour();
+	}
+	showStatus();
+	playerHitOrStand();
 }
 
 startGame();
