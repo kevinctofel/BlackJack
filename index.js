@@ -6,8 +6,8 @@ values = ["Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"
 
 // Populate initial deck of cards with key value pairs
 function createDeck() {
-	for (let i = 0; i < 13; i++) {
-		for (let j = 0; j < 4; j++) {
+	for (let i = 0; i < values.length; i++) {
+		for (let j = 0; j < suits.length; j++) {
 			deck.push({ value: values[i], suit: suits[j] });
 		}
 	}
@@ -88,31 +88,85 @@ function showStatus() {
 	for (let i = 1; i < dealerCards.length; i++) {
 		dealerHand += (` and ${dealerCards[i].value} of ${dealerCards[i].suit}`);
 	}
-	let dealerTotal = (getHandValue(dealerCards));
+	const dealerTotal = (getHandValue(dealerCards));
 	console.log(`${dealerHand} (${dealerTotal})`);
 
 	for (let i = 1; i < playerCards.length; i++) {
 		playerHand += (` and ${playerCards[i].value} of ${playerCards[i].suit}`);
 	}
-	let playerTotal = (getHandValue(playerCards));
+	const playerTotal = (getHandValue(playerCards));
 	console.log(`${playerHand} (${playerTotal})`);
+
+	checkPlayerScore(playerTotal);
+
 }
 
-function drawCard() { // draw single card for play Hit action
-	playerCards.push(deck.pop());
+function checkPlayerScore(playerTotal) {
+	if (playerTotal > 21) {
+		let status = "\nPlayer busted! Play again?(Y)es or(N)o?";
+		replay(status);
+	} else if (playerTotal == 21) {
+		let status = "\nBlackJack! Player wins! Play again?(Y)es or(N)o?";
+		replay(status);
+	}
 }
 
-function playerHitOrStand() { // recursive Hit or Stand action
+function drawCard(arr) { // draw single card for play Hit action
+	arr.push(deck.pop());
+}
+
+function playerHitOrStand(arr) { // recursive Hit or Stand action
 	let input = "Y";
 	input = prompt("\nDo you want to (H)it or (S)tand?").toUpperCase();
 	if (input == "H") {
-		drawCard();
+		drawCard(playerCards);
 		showStatus();
-		playerHitOrStand();
+		return playerHitOrStand(playerCards);
 	}
 	else if (input == "S") {
 		console.log("\nYou hit stand!\n");
 		showStatus();
+
+	}
+}
+
+function dealerAction(dealerCards, playerCards) {
+	do {
+		drawCard(dealerCards);
+	}
+	while ((getHandValue(dealerCards) < 21) && (getHandValue(dealerCards)) < (getHandValue(playerCards)));
+	showStatus();
+	if (getHandValue(dealerCards) > 21) {
+		status = "Dealer busted, player wins! Play again?(Y)es or(N)o?";
+		replay(status);
+	} else if (getHandValue(dealerCards) > getHandValue(playerCards)) {
+		status = "Dealer wins! Play again?(Y)es or(N)o?";
+		replay(status);
+	} else if (getHandValue(dealerCards) == getHandValue(playerCards)) {
+		status = "It's a push! Play again?(Y)es or(N)o?";
+		replay(status);
+	}
+}
+
+function replay(status) {
+	let input = "Y";
+	input = prompt(status).toUpperCase();
+	if (input == "Y") { // this is why the game should be an object; easy to change values or reset them
+		dealerCards = [];
+		playerCards = [];
+		playerHand = 0;
+		playerTotal = 0;
+		dealerCards = [];
+		dealerHand = 0;
+		dealerTotal = 0;
+		createDeck();
+		shuffleDeck(deck);
+		drawFour();
+		showStatus();
+		playerHitOrStand();
+	}
+	else if (input == "N") {
+		console.log("Thanks for playing!");
 	}
 }
 
@@ -125,7 +179,9 @@ function startGame() {
 		drawFour();
 	}
 	showStatus();
-	playerHitOrStand();
+	playerHitOrStand(playerCards);
+	dealerAction(dealerCards, playerCards);
 }
+
 
 startGame();
